@@ -1,4 +1,58 @@
+将类的加载过程之前，我先讲一下类加载器的内容，可以直接跳到类加载过程，不影响阅读。
+
 [toc]
+### 类加载器
+#### 什么是类加载器？
+在类加载的过程中的**加载阶段**中，第一步是获取Class文件的二进制字节流，至于怎么获取，虚拟机没做要求，由开发人员来实现**获取二进制字节流**的这个动作。**实现这个动作的代码模块就叫做“类加载器”。** 简而言之，类加载器使用来实现类的加载动作的。（顾名思义~~~haha）
+
+#### 类加载器的种类
+- **定义加载器**：类加载器L**直接创建**了类或接口C，那么就说L定义了C，或者说，L是C的定义加载器。
+- **初始加载器**：当一个类加载器通过**双亲委派机制**把加载请求委托给其他类加载器，那么**发起**这个加载请求的类加载器和**最终创建**该类的类加载器**不需要是同一个**。即是说，类加载器 L 创建了 C ，可能是 **L 通过委托其他类加载器来创建的**，可以说**L 导致了 C 的创建**，或者说，L 是 C 的初始加载器。
+> **定义加载器是调用了 defineClass() 方法的那个**
+
+#### 在虚拟机中，如何确定一个类？
+在虚拟机运行时，类或接口不仅仅是有它的类的名称来决定，而是有一个值对：二进制名称和它的**定义加载器**共同确定的。形如&lt;N, L_d&gt;，其中 N 是类或者接口的名称，L_d 是该类的定义加载器。
+
+#### 类加载器的作用
+1. 用来实现类的加载动作。
+2. **用来确定一个类**
+    ```java
+    import java.io.*;
+
+    public class ClassLoaderTest {
+
+        public static void main(String[] args) throws Exception {
+
+            ClassLoader loader = new ClassLoader() {
+                @Override
+                public Class<?> loadClass(String name) throws ClassNotFoundException {
+                    try {
+                        String fileName = name.substring(name.lastIndexOf(".") + 1) + ".class";
+                        InputStream is = getClass().getResourceAsStream(fileName);
+                        if(is == null){
+                            return super.loadClass(name);
+                        }
+                        byte[] b = new byte[is.available()];
+                        is.read(b);
+                        return defineClass(name, b, 0, b.length);
+                    } catch(IOException e) {
+                        throw new ClassNotFoundException(name);
+                    }
+                }
+            };
+
+            Object obj = loader.loadClass("ClassLoaderTest").newInstance();
+
+            System.out.println(obj.getClass());
+            System.out.println("obj instanceof ClassLoaderTest: " + (obj instanceof ClassLoaderTest));
+        }
+    }
+    ```
+    输出
+    ```
+    class ClassLoaderTest
+    obj instanceof ClassLoaderTest: false
+    ```
 
 ### 类加载的过程
 > 一个类，从加载到内存中开始，到使用，到卸载出内存，其生命周期大致分为一下五部分。
