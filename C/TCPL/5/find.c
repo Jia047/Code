@@ -1,38 +1,42 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <errno.h>
 
-#define STR_SIZE 1024
+#define MAXLINE 1024
 
 /*
 读取文本，将文本中的每一行读出到内存，
 并将该行的首地址，赋值给 line 的元素，
 返回读取的行数
 */
-int readline(char* line[], char* file_name)
+int readline(char* text[], char* file_name)
 {
     FILE* fp;
-    char str[STR_SIZE];
-    int nlines = 0;
-    if(!(fp = fopen(file_name, "r")))
-    {
-        printf("errno: %d", errno);
-        system("pause");
-        return 0;
-    }
-    while(!feof(fp))
-    {
-        fgets(str, STR_SIZE, fp);
-        line[nlines] = (char*)malloc(strlen(str));
-        if(line[nlines] == NULL)
-        {
-            exit(-1);
-        }
-        strcpy(line[nlines], str);
-        nlines++;
-    }
+	if (!(fp = fopen(file_name, "r")))
+	{
+		printf("file open error.errno: %d\n", errno);
+		system("pause");
+		return 0;
+	}
+	int nlines = 0; 
+	char line[MAXLINE];
+	while (!feof(fp))
+	{
+		memset(line, 0, MAXLINE);
+		fgets(line, MAXLINE, fp);
+		text[nlines] = (char*)malloc(strlen(line));
+		if (!text[nlines])
+		{
+			break;
+		}
+		strcpy(text[nlines], line);
+		nlines++;
+	}
 
-    return nlines;
+	fclose(fp);
+
+	return nlines;
 }
 
 void writeline(char* line[], int nlines)
@@ -85,7 +89,6 @@ int main(int argc, char *argv[]) {
         argv++;
         if((nlines = readline(line, file_name)) != 0)
         {
-            // writeline(line, nlines);
             long lineno = 0;
             while(nlines-- > 0)
             {
