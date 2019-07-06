@@ -18,7 +18,7 @@ int readline(char* text[], char* file_name)
 		system("pause");
 		return 0;
 	}
-	int nlines = 0; 
+	int nlines = 0;
 	char line[MAXLINE];
 	while (!feof(fp))
 	{
@@ -52,7 +52,7 @@ int ctoi(char* str)
 
     int ret = 0;
     while(*str)
-    {   
+    {
         if(*str <= '9' && *str >= '0')
             ret = ret * 10 + *str++ - 48;
         else
