@@ -1,0 +1,16 @@
+typedef
+char
+struct
+unsigned
+int
+struct
+struct
+long
+long
+char
+return
+struct
+if
+return
+struct
+if
