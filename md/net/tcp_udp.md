@@ -52,3 +52,11 @@ TCP四次挥手
 5. A收到第二个确认包后，马上发送确认包，置ACK=1, seq=u+1, ack=w+1，然后等待 2MSL 时间，期间处于TIME_WAIT状态，过了时间后变为CLOSED状态。
 6. B收到确认包后，进入CLOSED 状态。
 ![](https://note.youdao.com/yws/api/personal/file/WEB08843b03ccc709b634ea086be91e7909?method=download&shareKey=9fe1653817e0dd42603df26d671a01e7)
+
+为什么是三次握手而不是两次？
+如果细心点就会发现，单靠前两次握手，主动连接的A是不知道B的序列号seq的。而序列号在可靠传输是起着重要作用的，所以需要三次握手。
+https://blog.csdn.net/lengxiao1993/article/details/82771768
+
+为什么四次挥手的时候要等 2MLS ?
+1. 假设主动方发送确认包后马上关闭连接，如果这个确认包丢失了，那么被动方将会一直等待主动方而导致资源浪费。因为我们没有马上关闭连接，当被动方长时间没收到确认包时，主动方可以重发确认包。
+2. 
